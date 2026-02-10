@@ -1,0 +1,65 @@
+/* Clean Editor Styles override ngx-quill defaults */
+:host ::ng-deep .clean-editor .ql-toolbar.ql-snow {
+    border: none;
+    padding: 12px 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f3f4f6;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+:host ::ng-deep .clean-editor .ql-container.ql-snow {
+    border: none;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    /* Clean sans-serif like mockup */
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+:host ::ng-deep .clean-editor .ql-editor {
+    padding: 0;
+    min-height: 400px;
+    color: #4b5563;
+    /* gray-600 */
+    overflow-wrap: break-word;
+    word-break: break-word;
+    word-wrap: break-word;
+}
+
+:host ::ng-deep .clean-editor .ql-editor.ql-blank::before {
+    font-style: normal;
+    color: #9ca3af;
+    /* gray-400 */
+    left: 0;
+    font-size: 1.05rem;
+}
+
+/* Custom Card Shadow - softer */
+.card-shadow {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    transition: box-shadow 0.3s ease;
+}
+
+.card-shadow:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db;
+}

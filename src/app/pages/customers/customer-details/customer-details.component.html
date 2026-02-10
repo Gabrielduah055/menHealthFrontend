@@ -1,0 +1,168 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <!-- Breadcrumb -->
+  <div class="flex items-center text-sm text-gray-500 mb-6">
+    <a routerLink="/dashboard" class="hover:text-purple-600">Dashboard</a>
+    <span class="mx-2">/</span>
+    <a routerLink="/customers" class="hover:text-purple-600">Customers</a>
+    <span class="mx-2">/</span>
+    <span class="text-gray-800 font-medium">{{customer.name}}</span>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column: Customer Profile & Notes -->
+    <div class="space-y-6">
+      
+      <!-- Profile Card -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center">
+        <div class="w-24 h-24 rounded-full p-1 border-2 border-purple-100 mx-auto mb-4">
+          <img [src]="customer.avatar" alt="Profile" class="w-full h-full rounded-full object-cover">
+        </div>
+        <h2 class="text-xl font-bold text-gray-900">{{customer.name}}</h2>
+        <p class="text-purple-600 font-medium text-sm">{{customer.type}}</p>
+        <p class="text-gray-400 text-xs mt-1">Customer since {{customer.since}}</p>
+
+        <div class="mt-8 space-y-4 text-left">
+          <div class="flex items-start">
+            <div class="w-8 flex justify-center mt-0.5 text-gray-400"><i class="uil uil-envelope"></i></div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Email</p>
+              <p class="text-sm text-gray-700 font-medium">{{customer.email}}</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <div class="w-8 flex justify-center mt-0.5 text-gray-400"><i class="uil uil-phone"></i></div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Phone</p>
+              <p class="text-sm text-gray-700 font-medium">{{customer.phone}}</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <div class="w-8 flex justify-center mt-0.5 text-gray-400"><i class="uil uil-map-marker"></i></div>
+            <div>
+              <p class="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Shipping Address</p>
+              <p class="text-sm text-gray-700 font-medium whitespace-pre-line">{{customer.address}}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-3">
+          <button class="px-4 py-2 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-100 border border-gray-200">
+            Edit Profile
+          </button>
+          <button class="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
+            Send Message
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Notes -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="font-bold text-gray-800 text-sm uppercase tracking-wider">Admin Notes</h3>
+          <button class="text-xs text-purple-600 font-medium hover:underline">Add Note</button>
+        </div>
+        
+        <div class="space-y-4">
+          <div *ngFor="let note of notes" class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+            <p class="text-sm text-gray-600 mb-3 leading-relaxed">{{note.text}}</p>
+            <div class="flex justify-between items-center text-xs text-gray-400">
+              <span>By {{note.author}}</span>
+              <span>{{note.date}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Stats & Order History -->
+    <div class="lg:col-span-2 space-y-6">
+      
+      <!-- Tabs -->
+      <div class="bg-white rounded-t-xl border-b border-gray-200 px-6 pt-2">
+        <div class="flex space-x-8">
+          <button 
+            *ngFor="let tab of tabs" 
+            (click)="activeTab = tab"
+            class="py-4 text-sm font-medium border-b-2 transition-colors relative"
+            [ngClass]="activeTab === tab ? 'border-purple-600 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700'">
+            {{tab}}
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content Area -->
+      <div class="bg-white rounded-b-xl shadow-sm border border-gray-100 border-t-0 p-0 overflow-hidden min-h-[500px]">
+        
+        <!-- Order History Content -->
+        <div *ngIf="activeTab === 'Order History'">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-gray-50/50 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wider">
+                  <th class="px-6 py-4 font-semibold">Order ID</th>
+                  <th class="px-6 py-4 font-semibold">Date</th>
+                  <th class="px-6 py-4 font-semibold">Status</th>
+                  <th class="px-6 py-4 font-semibold">Items</th>
+                  <th class="px-6 py-4 font-semibold text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                <tr *ngFor="let order of orders" class="hover:bg-gray-50 transition-colors">
+                  <td class="px-6 py-4 text-sm font-bold text-gray-900">{{order.id}}</td>
+                  <td class="px-6 py-4 text-sm text-gray-500">{{order.date}}</td>
+                  <td class="px-6 py-4">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium {{order.statusColor}}">
+                      {{order.status}}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-gray-600">{{order.items}}</td>
+                  <td class="px-6 py-4 text-sm font-bold text-gray-900 text-right">{{order.total}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-gray-50/30">
+            <span class="text-xs text-gray-500">Showing 5 of 12 orders</span>
+            <div class="flex space-x-2">
+              <button class="px-3 py-1 border border-gray-200 rounded bg-white text-xs font-medium text-gray-600 hover:bg-gray-50">Previous</button>
+              <button class="px-3 py-1 border border-gray-200 rounded bg-white text-xs font-medium text-gray-600 hover:bg-gray-50">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other Tabs Placeholders -->
+        <div *ngIf="activeTab !== 'Order History'" class="p-12 text-center text-gray-400">
+          <i class="uil uil-layer-group text-4xl mb-2 block"></i>
+          Content for {{activeTab}} will appear here.
+        </div>
+
+      </div>
+
+      <!-- Summary Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Total Spent</p>
+          <h3 class="text-2xl font-bold text-gray-900">{{customer.totalSpent}}</h3>
+          <p class="text-xs text-green-600 font-medium mt-1 flex items-center">
+            <i class="uil uil-arrow-growth mr-1"></i> 12% from last year
+          </p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Orders Count</p>
+          <h3 class="text-2xl font-bold text-gray-900">{{customer.ordersCount}}</h3>
+          <p class="text-xs text-gray-400 mt-1">Averaging 1.2 orders/mo</p>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Support Tickets</p>
+          <h3 class="text-2xl font-bold text-gray-900">{{customer.supportTickets}}</h3>
+          <p class="text-xs text-green-600 font-medium mt-1 flex items-center">
+            <i class="uil uil-check-circle mr-1"></i> Resolved (0 open)
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

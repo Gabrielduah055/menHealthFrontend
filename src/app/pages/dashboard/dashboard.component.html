@@ -1,0 +1,258 @@
+<div class="space-y-6 p-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+  </div>
+
+  <!-- Stats Cards Row -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div *ngFor="let stat of stats" class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div class="flex justify-between items-start">
+        <div class="p-3 rounded-lg {{stat.bg}} {{stat.text}}">
+          <i class="uil {{stat.icon}} text-xl"></i>
+        </div>
+        <span class="text-xs font-medium px-2 py-1 rounded-full flex items-center" 
+              [ngClass]="stat.isPositive ? 'text-green-600' : 'text-red-600'">
+          <i class="uil" [ngClass]="stat.isPositive ? 'uil-arrow-up' : 'uil-arrow-down'"></i>
+          {{stat.change}}
+        </span>
+      </div>
+      <div class="mt-4">
+        <p class="text-sm text-gray-500 font-medium">{{stat.label}}</p>
+        <h3 class="text-3xl font-bold text-gray-800 mt-1">{{stat.value}}</h3>
+        <p class="text-xs text-gray-400 mt-1">{{stat.subtext}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Recent Blog Posts & Quick Actions/Comments -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    
+    <!-- Recent Blog Posts (Left 2/3) -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="font-bold text-gray-800 text-lg">Recent Blog Posts</h3>
+          <p class="text-sm text-gray-500">Manage and publish your content</p>
+        </div>
+        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors cursor-pointer">
+          <i class="uil uil-plus mr-2"></i> New Post
+        </button>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="text-xs text-gray-400 uppercase border-b border-gray-100">
+              <th class="py-3 font-semibold">Title</th>
+              <th class="py-3 font-semibold">Status</th>
+              <th class="py-3 font-semibold">Comments</th>
+              <th class="py-3 font-semibold">Date</th>
+              <th class="py-3 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm">
+            <tr *ngFor="let post of recentPosts" class="border-b border-gray-50 hover:bg-gray-50 transition-colors group">
+              <td class="py-4 pr-4">
+                <div class="flex items-start">
+                  <div class="w-1 h-8 rounded-full mr-3" [ngClass]="post.status === 'Published' ? 'bg-purple-500' : (post.status === 'Draft' ? 'bg-yellow-400' : 'bg-blue-400')"></div>
+                  <div>
+                    <p class="font-semibold text-gray-800">{{post.title}}</p>
+                    <p class="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">{{post.url}}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="py-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium {{post.statusColor}}">
+                  {{post.status}}
+                </span>
+              </td>
+              <td class="py-4 text-gray-600 pl-4">{{post.comments}}</td>
+              <td class="py-4 text-gray-500">{{post.date}}</td>
+              <td class="py-4 text-right">
+                <div class="flex items-center justify-end space-x-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button class="hover:text-purple-600 p-1"><i class="uil uil-pen"></i></button>
+                  <button class="hover:text-purple-600 p-1"><i class="uil uil-share-alt"></i></button>
+                  <button class="hover:text-red-600 p-1"><i class="uil uil-ellipsis-v"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 text-right">
+        <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center justify-end">
+          View All Posts <i class="uil uil-arrow-right ml-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Column: Quick Actions & Comments -->
+    <div class="space-y-6">
+      <!-- Quick Actions -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 class="font-bold text-gray-800 text-lg mb-1">Quick Actions</h3>
+        <p class="text-sm text-gray-500 mb-4">Manage your content</p>
+        
+        <div class="space-y-3">
+          <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
+            <i class="uil uil-plus mr-2"></i> Create New Blog Post
+          </button>
+          <button class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
+            <i class="uil uil-box mr-2"></i> Add New Product
+          </button>
+          <button class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
+            <i class="uil uil-comment-alt-message mr-2"></i> Moderate Comments
+          </button>
+        </div>
+      </div>
+
+      <!-- Recent Comments -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 class="font-bold text-gray-800 text-lg mb-4">Recent Comments</h3>
+        <div class="space-y-4">
+          <div *ngFor="let comment of recentComments" class="flex items-start space-x-3 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
+            <img [src]="comment.avatar" class="w-8 h-8 rounded-full object-cover" alt="User">
+            <div class="flex-1">
+              <div class="flex justify-between items-start">
+                <h4 class="text-sm font-semibold text-gray-800">{{comment.name}}</h4>
+                <i class="uil uil-check text-green-500 text-sm"></i>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{comment.text}}</p>
+              <p class="text-[10px] text-gray-400 mt-1">{{comment.time}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 text-center">
+          <a href="#" class="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center justify-center">
+            View All Comments <i class="uil uil-arrow-right ml-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Top Products & Recent Orders -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Top Products -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="font-bold text-gray-800 text-lg">Top Products</h3>
+          <p class="text-sm text-gray-500">Best selling health appliances</p>
+        </div>
+        <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center">
+          Manage <i class="uil uil-arrow-right ml-1"></i>
+        </a>
+      </div>
+
+      <div class="space-y-4">
+        <div *ngFor="let product of topProducts" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group">
+          <div class="flex items-center space-x-4">
+            <div class="w-10 h-10 rounded-lg {{product.bg}} {{product.text}} flex items-center justify-center">
+              <i class="uil {{product.icon}} text-xl"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-semibold text-gray-800">{{product.name}}</h4>
+              <p class="text-xs text-gray-500">In stock: {{product.stock}}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-bold text-gray-800">{{product.price}}</p>
+            <p class="text-xs text-green-600 font-medium">{{product.sold}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h3 class="font-bold text-gray-800 text-lg">Recent Orders</h3>
+          <p class="text-sm text-gray-500">Track customer purchases</p>
+        </div>
+        <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center">
+          View All <i class="uil uil-arrow-right ml-1"></i>
+        </a>
+      </div>
+
+      <div class="space-y-4">
+        <div *ngFor="let order of recentOrders" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group">
+          <div class="flex items-center space-x-3">
+            <img [src]="order.avatar" class="w-8 h-8 rounded-full object-cover" alt="Customer">
+            <div>
+              <h4 class="text-sm font-semibold text-gray-800">{{order.id}}</h4>
+              <p class="text-xs text-gray-500">{{order.customer}}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-medium {{order.statusColor}} block w-fit ml-auto mb-1">
+              {{order.status}}
+            </span>
+            <p class="text-xs font-bold text-gray-800">{{order.price}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Revenue & Social Stats -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Revenue Analytics (Left 2/3) -->
+    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-800 text-lg">Revenue Analytics</h3>
+        <p class="text-sm text-gray-500">Monthly performance overview</p>
+      </div>
+      
+      <!-- Chart Area -->
+      <div class="relative h-64 w-full flex items-end justify-center overflow-hidden">
+        <!-- Grid lines -->
+        <div class="absolute inset-0 grid grid-rows-4 w-full h-full">
+          <div class="border-t border-gray-100 w-full relative"><span class="absolute -top-3 left-0 text-[10px] text-gray-400">40k</span></div>
+          <div class="border-t border-gray-100 w-full relative"><span class="absolute -top-3 left-0 text-[10px] text-gray-400">30k</span></div>
+          <div class="border-t border-gray-100 w-full relative"><span class="absolute -top-3 left-0 text-[10px] text-gray-400">20k</span></div>
+          <div class="border-t border-gray-100 w-full relative"><span class="absolute -top-3 left-0 text-[10px] text-gray-400">10k</span></div>
+        </div>
+        
+        <!-- SVG Line Chart -->
+        <svg class="absolute inset-0 w-full h-full ml-6" preserveAspectRatio="none">
+          <path d="M0,250 L100,230 L200,180 L300,190 L400,150 L500,120 L600,130 L700,80" 
+                fill="none" stroke="#a855f7" stroke-width="3" vector-effect="non-scaling-stroke" />
+          <defs>
+            <linearGradient id="revenueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.2" />
+              <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0" />
+            </linearGradient>
+          </defs>
+          <path d="M0,250 L100,230 L200,180 L300,190 L400,150 L500,120 L600,130 L700,80 V256 H0 Z" 
+                fill="url(#revenueGradient)" stroke="none" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Social Media Stats -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div class="mb-6">
+        <h3 class="font-bold text-gray-800 text-lg">Social Media Stats</h3>
+        <p class="text-sm text-gray-500">Engagement metrics</p>
+      </div>
+
+      <div class="space-y-4">
+        <div *ngFor="let social of socialStats" class="p-4 rounded-xl {{social.bg}} flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center {{social.text}} shadow-sm">
+              <i class="uil {{social.icon}}"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-gray-800">{{social.platform}}</h4>
+              <p class="text-xs text-gray-500">{{social.followers}}</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold {{social.text}}">{{social.change}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

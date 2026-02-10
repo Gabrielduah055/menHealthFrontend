@@ -1,0 +1,154 @@
+<div class="p-6 bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">Order Management</h1>
+      <p class="text-gray-500 mt-1">Track and manage customer orders.</p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Total Orders</span>
+        <i class="uil uil-shopping-bag text-purple-500 text-lg"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-900">{{ orders.length }}</h3>
+      <p class="text-[10px] text-green-600 font-medium mt-1">All time</p>
+    </div>
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Pending</span>
+        <i class="uil uil-clock text-orange-500 text-lg"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-900">{{ getCountByStatus('pending') }}</h3>
+      <p class="text-[10px] text-orange-600 font-medium mt-1">Needs attention</p>
+    </div>
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Processing</span>
+        <i class="uil uil-process text-blue-500 text-lg"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-900">{{ getCountByStatus('processing') }}</h3>
+      <p class="text-[10px] text-gray-400 mt-1">On track</p>
+    </div>
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-xs text-gray-500 font-medium uppercase tracking-wider">Delivered</span>
+        <i class="uil uil-check-circle text-green-500 text-lg"></i>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-900">{{ getCountByStatus('delivered') }}</h3>
+      <p class="text-[10px] text-green-600 font-medium mt-1">Completed</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row gap-4 items-center">
+    <div class="flex-1 w-full relative">
+      <i class="uil uil-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        placeholder="Search orders by ID, customer..." 
+        class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50 focus:bg-white transition-colors"
+      >
+    </div>
+    <div class="flex gap-4 w-full md:w-auto">
+      <select [(ngModel)]="selectedStatus" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer min-w-[140px]">
+        <option>All Status</option>
+        <option>Pending</option>
+        <option>Processing</option>
+        <option>Shipped</option>
+        <option>Delivered</option>
+        <option>Cancelled</option>
+      </select>
+      <button class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm hover:bg-gray-100 flex items-center">
+        <i class="uil uil-filter mr-2"></i> Filter
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && orders.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+      <i class="uil uil-shopping-basket text-3xl"></i>
+    </div>
+    <h3 class="text-lg font-bold text-gray-800 mb-2">No Orders Found</h3>
+    <p class="text-gray-500 mb-6">There are no orders placed yet.</p>
+  </div>
+
+  <!-- Orders Table -->
+  <div *ngIf="orders.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-gray-50/50 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wider">
+            <th class="px-6 py-4 font-semibold">Order ID</th>
+            <th class="px-6 py-4 font-semibold">Customer</th>
+            <th class="px-6 py-4 font-semibold">Date</th>
+            <th class="px-6 py-4 font-semibold text-center">Items</th>
+            <th class="px-6 py-4 font-semibold">Payment</th>
+            <th class="px-6 py-4 font-semibold">Total</th>
+            <th class="px-6 py-4 font-semibold">Status</th>
+            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          <tr *ngFor="let order of orders" class="hover:bg-gray-50 transition-colors group">
+            <td class="px-6 py-4">
+              <a [routerLink]="['/orders', order.id]" class="text-sm font-bold text-purple-600 hover:text-purple-700 hover:underline">
+                {{order.displayId}}
+              </a>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm font-medium text-gray-900">{{order.customer}}</div>
+              <div class="text-xs text-gray-500">{{order.customerEmail}}</div>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">
+              {{order.date}}
+            </td>
+            <td class="px-6 py-4 text-center text-sm text-gray-600">
+              {{order.items}}
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-600">
+              {{order.payment}}
+            </td>
+            <td class="px-6 py-4 text-sm font-bold text-gray-900">
+              {{order.total}}
+            </td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold {{order.statusClass}}">
+                {{order.status}}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-right">
+              <button class="text-gray-400 hover:text-purple-600 p-1 transition-colors">
+                <i class="uil uil-eye text-lg"></i>
+              </button>
+              <button class="text-gray-400 hover:text-gray-600 p-1 transition-colors ml-2">
+                <i class="uil uil-ellipsis-v text-lg"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/30">
+      <div class="text-sm text-gray-500">
+        Showing <span class="font-medium">1</span> to <span class="font-medium">{{orders.length}}</span> of <span class="font-medium">{{orders.length}}</span> orders
+      </div>
+      <div class="flex space-x-2">
+        <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+          <i class="uil uil-angle-left"></i>
+        </button>
+        <button class="w-8 h-8 flex items-center justify-center rounded bg-purple-600 text-white font-medium shadow-sm">1</button>
+        <button class="w-8 h-8 flex items-center justify-center rounded border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 disabled:opacity-50">
+          <i class="uil uil-angle-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

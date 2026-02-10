@@ -1,0 +1,97 @@
+<div class="flex h-screen bg-gray-50 font-sans">
+  <!-- Sidebar -->
+  <aside [class.w-64]="isSidebarOpen" [class.w-20]="!isSidebarOpen" class="bg-white border-r border-gray-200 transition-all duration-300 flex flex-col fixed h-full z-20">
+    <!-- Logo -->
+    <div class="h-16 flex items-center px-6 border-b border-gray-100">
+      <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white mr-3 shrink-0">
+        <i class="uil uil-heartbeat text-xl"></i>
+      </div>
+      <span *ngIf="isSidebarOpen" class="font-bold text-xl text-gray-800 tracking-tight">HealthPulse</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto py-6 px-3 space-y-1">
+      
+      <a routerLink="/dashboard" routerLinkActive="bg-purple-50 text-purple-600 border-r-4 border-purple-600" class="flex items-center px-3 py-3 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition-colors group">
+        <i class="uil uil-apps text-xl mr-3 group-hover:text-purple-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Dashboard</span>
+      </a>
+
+      <a routerLink="/blogs" routerLinkActive="bg-purple-50 text-purple-600 border-r-4 border-purple-600" class="flex items-center px-3 py-3 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition-colors group">
+        <i class="uil uil-file-alt text-xl mr-3 group-hover:text-purple-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Blogs</span>
+      </a>
+
+      <a routerLink="/comments" routerLinkActive="bg-purple-50 text-purple-600 border-r-4 border-purple-600" class="flex items-center px-3 py-3 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition-colors group">
+        <i class="uil uil-comments-alt text-xl mr-3 group-hover:text-purple-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Comments</span>
+      </a>
+
+      <a routerLink="/customers" routerLinkActive="bg-purple-50 text-purple-600 border-r-4 border-purple-600" class="flex items-center px-3 py-3 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition-colors group">
+        <i class="uil uil-users-alt text-xl mr-3 group-hover:text-purple-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Customers</span>
+      </a>
+
+      <a routerLink="/products" routerLinkActive="bg-purple-50 text-purple-600 border-r-4 border-purple-600" class="flex items-center px-3 py-3 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition-colors group">
+        <i class="uil uil-box text-xl mr-3 group-hover:text-purple-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Products</span>
+      </a>
+
+      <a routerLink="/orders" routerLinkActive="bg-purple-50 text-purple-600 border-r-4 border-purple-600" class="flex items-center px-3 py-3 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-purple-600 transition-colors group">
+        <i class="uil uil-shopping-cart text-xl mr-3 group-hover:text-purple-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Orders</span>
+      </a>
+
+    </nav>
+
+    <!-- Bottom Actions -->
+    <div class="p-4 border-t border-gray-100">
+      <a routerLink="/logout" class="flex items-center px-3 py-3 text-gray-500 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors group w-full">
+        <i class="uil uil-signout text-xl mr-3 group-hover:text-red-600"></i>
+        <span *ngIf="isSidebarOpen" class="font-medium">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div [class.ml-64]="isSidebarOpen" [class.ml-20]="!isSidebarOpen" class="flex-1 flex flex-col transition-all duration-300 min-w-0">
+    
+    <!-- Top Header -->
+    <header class="h-16 bg-white border-b border-gray-100 flex items-center justify-between px-8 sticky top-0 z-10">
+      <!-- Search -->
+      <div class="flex-1 max-w-xl">
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="uil uil-search text-gray-400 text-lg"></i>
+          </span>
+          <input type="text" class="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-1 focus:ring-purple-500 focus:border-purple-500 sm:text-sm" placeholder="Search analytics, blogs, or orders...">
+        </div>
+      </div>
+
+      <!-- Right Side Actions -->
+      <div class="flex items-center space-x-6 ml-4">
+        <!-- Notifications -->
+        <button class="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
+          <span class="sr-only">View notifications</span>
+          <i class="uil uil-bell text-2xl"></i>
+          <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+        </button>
+
+        <!-- Profile Dropdown -->
+        <div class="flex items-center">
+          <div class="text-right mr-3 hidden sm:block">
+            <p class="text-sm font-semibold text-gray-800">Dr. Sarah Mensah</p>
+            <p class="text-xs text-gray-500">Super Admin</p>
+          </div>
+          <img class="h-10 w-10 rounded-full object-cover border-2 border-purple-100" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="User avatar">
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="flex-1 overflow-y-auto p-8 bg-gray-50">
+      <router-outlet></router-outlet>
+    </main>
+
+  </div>
+</div>
