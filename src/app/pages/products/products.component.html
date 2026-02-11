@@ -1,5 +1,4 @@
 <div class="p-6 bg-gray-50 min-h-screen">
-  <!-- Breadcrumb & Header -->
   <div class="mb-8">
     <div class="flex items-center text-sm text-gray-500 mb-2">
       <span class="text-purple-600">HealthPulse</span>
@@ -22,61 +21,108 @@
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row gap-4 items-center">
+  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row gap-4 items-center sticky top-4 z-10">
     <div class="flex-1 w-full relative">
+      <label for="productSearch" class="sr-only">Search products</label>
       <i class="uil uil-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-      <input 
-        type="text" 
+      <input
+        id="productSearch"
+        type="text"
         [(ngModel)]="searchTerm"
-        placeholder="Filter by product name, SKU..." 
+        (ngModelChange)="applyFilters()"
+        placeholder="Filter by product name, SKU..."
         class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50 focus:bg-white transition-colors"
       >
     </div>
     <div class="flex gap-4 w-full md:w-auto overflow-x-auto">
-      <select [(ngModel)]="selectedCategory" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer min-w-[140px]">
+      <label for="categoryFilter" class="sr-only">Filter by category</label>
+      <select id="categoryFilter" [(ngModel)]="selectedCategory" (ngModelChange)="applyFilters()" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer min-w-[160px]">
         <option>All Categories</option>
-        <option>Diagnostics</option>
-        <option>First Aid</option>
-        <option>Surgical</option>
+        <option *ngFor="let category of categories.slice(1)">{{category}}</option>
       </select>
-      <select [(ngModel)]="selectedStock" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer min-w-[140px]">
-        <option>Stock Status</option>
+      <label for="stockFilter" class="sr-only">Filter by stock status</label>
+      <select id="stockFilter" [(ngModel)]="selectedStock" (ngModelChange)="applyFilters()" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer min-w-[140px]">
+        <option>All Stock</option>
         <option>In Stock</option>
         <option>Low Stock</option>
         <option>Out of Stock</option>
       </select>
-      <button class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm hover:bg-gray-100 flex items-center min-w-fit">
-        <i class="uil uil-sort mr-2"></i> Sort
+      <label for="sortFilter" class="sr-only">Sort products</label>
+      <select id="sortFilter" [(ngModel)]="selectedSort" (ngModelChange)="applyFilters()" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer min-w-[170px]">
+        <option>Newest</option>
+        <option>Oldest</option>
+        <option>Price: Low to High</option>
+        <option>Price: High to Low</option>
+        <option>Name: A-Z</option>
+      </select>
+      <button *ngIf="hasActiveFilters" (click)="clearFilters()" class="px-4 py-2.5 border border-gray-200 rounded-lg bg-white text-gray-700 text-sm hover:bg-gray-100 flex items-center min-w-fit">
+        <i class="uil uil-times mr-2"></i> Clear
       </button>
     </div>
   </div>
 
-  <!-- Product Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-    <div *ngFor="let product of products" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all group">
-      <!-- Image Area -->
-      <div class="relative h-48 bg-gray-100 p-6 flex items-center justify-center">
+  <div class="mb-6 text-sm text-gray-500">
+    Showing <span class="font-semibold text-gray-700">{{filteredProducts.length}}</span> of
+    <span class="font-semibold text-gray-700">{{allProducts.length}}</span> products
+  </div>
+
+  <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div *ngFor="let item of [1,2,3,4,5,6,7,8]" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="h-48 bg-gray-100 animate-pulse"></div>
+      <div class="p-5 space-y-3">
+        <div class="h-4 bg-gray-100 rounded animate-pulse"></div>
+        <div class="h-4 bg-gray-100 rounded w-2/3 animate-pulse"></div>
+        <div class="h-8 bg-gray-100 rounded animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && errorMessage" class="bg-white rounded-xl border border-red-100 p-8 text-center">
+    <div class="text-red-600 text-4xl mb-3">
+      <i class="uil uil-exclamation-octagon"></i>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900">Could not load products</h3>
+    <p class="text-gray-500 mt-1">{{errorMessage}}</p>
+    <button (click)="loadProducts()" class="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700">
+      Retry
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && filteredProducts.length === 0" class="bg-white rounded-xl border border-gray-100 p-10 text-center">
+    <div class="w-14 h-14 mx-auto rounded-full bg-gray-100 text-gray-400 flex items-center justify-center mb-3">
+      <i class="uil uil-search text-2xl"></i>
+    </div>
+    <h3 class="text-lg font-semibold text-gray-900">No products found</h3>
+    <p class="text-gray-500 mt-1">Try changing your filters or search term.</p>
+    <button (click)="clearFilters()" class="mt-4 px-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50">
+      Reset Filters
+    </button>
+  </div>
+
+  <div *ngIf="!loading && !errorMessage && filteredProducts.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+    <div *ngFor="let product of filteredProducts" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <a [routerLink]="['/products', product.id]" class="relative h-40 bg-gray-100 block">
         <span class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-bold text-purple-600 uppercase tracking-wider shadow-sm">
           {{product.category}}
         </span>
-        <img [src]="product.image" [alt]="product.name" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
-      </div>
-      
-      <!-- Content -->
-      <div class="p-5">
-        <h3 class="font-bold text-gray-800 text-lg leading-tight mb-2 line-clamp-2 h-14">
+        <img [src]="product.image" [alt]="product.name" class="w-full h-full object-contain">
+      </a>
+
+      <div class="p-6">
+        <h3 [routerLink]="['/products', product.id]" class="font-bold text-gray-800 text-xl leading-tight mb-2 line-clamp-2 min-h-[3.5rem] cursor-pointer hover:text-purple-700 transition-colors">
           {{product.name}}
         </h3>
-        
+        <p class="text-sm text-gray-500 font-medium">{{product.displayId}} · Updated {{product.updatedAt}}</p>
+
         <div class="flex items-center justify-between mt-4">
           <div>
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Price</p>
-            <p class="text-lg font-bold text-gray-900">{{product.price}}</p>
+            <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Price</p>
+            <p class="text-xl font-bold text-gray-900">{{product.price}}</p>
           </div>
           <div class="text-right">
-            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Status</p>
-            <span class="px-2.5 py-1 rounded-full text-xs font-bold flex items-center justify-end {{product.statusClass}}">
+            <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Stock</p>
+            <p class="text-sm text-gray-600 mb-1">{{product.stockQty}} units</p>
+            <span class="px-3 py-1 rounded-full text-xs font-bold flex items-center justify-end {{product.statusClass}}">
               <span class="w-1.5 h-1.5 rounded-full mr-1.5" [ngClass]="{
                 'bg-green-500': product.status === 'In Stock',
                 'bg-orange-500': product.status === 'Low Stock',
@@ -88,12 +134,11 @@
         </div>
       </div>
 
-      <!-- Action Footer -->
-      <div class="px-5 py-4 border-t border-gray-50 bg-gray-50/50 flex justify-between items-center">
-        <a [routerLink]="['/products/edit', product.id]" class="text-sm font-medium text-purple-600 hover:text-purple-700 flex items-center transition-colors">
-          View Details <i class="uil uil-arrow-right ml-1"></i>
+      <div class="px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex justify-between items-center">
+        <a [routerLink]="['/products', product.id]" class="text-sm font-semibold text-purple-600 hover:text-purple-700 flex items-center transition-colors">
+          View Product <i class="uil uil-arrow-right ml-1"></i>
         </a>
-        <button class="text-gray-400 hover:text-gray-600 transition-colors">
+        <button aria-label="More product actions" class="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300 rounded">
           <i class="uil uil-ellipsis-h text-xl"></i>
         </button>
       </div>

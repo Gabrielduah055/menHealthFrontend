@@ -35,7 +35,7 @@
           <h3 class="font-bold text-gray-800 text-lg">Recent Blog Posts</h3>
           <p class="text-sm text-gray-500">Manage and publish your content</p>
         </div>
-        <button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors cursor-pointer">
+        <button [routerLink]="['/blogs/create']" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors cursor-pointer">
           <i class="uil uil-plus mr-2"></i> New Post
         </button>
       </div>
@@ -81,7 +81,7 @@
         </table>
       </div>
       <div class="mt-4 text-right">
-        <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center justify-end">
+        <a [routerLink]="['/blogs']" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center justify-end">
           View All Posts <i class="uil uil-arrow-right ml-1"></i>
         </a>
       </div>
@@ -95,10 +95,10 @@
         <p class="text-sm text-gray-500 mb-4">Manage your content</p>
         
         <div class="space-y-3">
-          <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
+          <button [routerLink]="['/blogs/create']" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
             <i class="uil uil-plus mr-2"></i> Create New Blog Post
           </button>
-          <button class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
+          <button [routerLink]="['/products/add']" class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
             <i class="uil uil-box mr-2"></i> Add New Product
           </button>
           <button class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
@@ -141,7 +141,7 @@
           <h3 class="font-bold text-gray-800 text-lg">Top Products</h3>
           <p class="text-sm text-gray-500">Best selling health appliances</p>
         </div>
-        <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center">
+        <a [routerLink]="['/products']" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center">
           Manage <i class="uil uil-arrow-right ml-1"></i>
         </a>
       </div>
@@ -172,13 +172,17 @@
           <h3 class="font-bold text-gray-800 text-lg">Recent Orders</h3>
           <p class="text-sm text-gray-500">Track customer purchases</p>
         </div>
-        <a href="#" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center">
+        <a [routerLink]="['/orders']" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center">
           View All <i class="uil uil-arrow-right ml-1"></i>
         </a>
       </div>
 
       <div class="space-y-4">
-        <div *ngFor="let order of recentOrders" class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group">
+        <a
+          *ngFor="let order of recentOrders"
+          [routerLink]="['/orders', order.orderId]"
+          class="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors group"
+        >
           <div class="flex items-center space-x-3">
             <img [src]="order.avatar" class="w-8 h-8 rounded-full object-cover" alt="Customer">
             <div>
@@ -192,7 +196,7 @@
             </span>
             <p class="text-xs font-bold text-gray-800">{{order.price}}</p>
           </div>
-        </div>
+        </a>
       </div>
     </div>
   </div>

@@ -55,7 +55,12 @@
                 <a [routerLink]="['/blogs/edit', blog.id]" class="text-gray-400 hover:text-purple-600 transition-colors" title="Edit">
                   <i class="uil uil-pen text-lg"></i>
                 </a>
-                <button class="text-gray-400 hover:text-red-600 transition-colors" title="Delete">
+                <button
+                  (click)="onDeleteBlog(blog.id)"
+                  [disabled]="deletingBlogId === blog.id"
+                  class="text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Delete"
+                >
                   <i class="uil uil-trash-alt text-lg"></i>
                 </button>
               </div>

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
 import { QuillModule } from 'ngx-quill';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 // @ts-ignore
 import Quill from 'quill';
 // @ts-ignore
@@ -35,6 +36,8 @@ export class BlogEditComponent implements OnInit {
   status: string = 'draft';
   publishDate: string = '';
   coverImageUrl: string = '';
+  selectedFile: File | null = null;
+  filePreview: string | null = null;
   allowComments: boolean = true;
   
   // Comments
@@ -69,7 +72,7 @@ export class BlogEditComponent implements OnInit {
   }
 
   fetchCategories() {
-    this.http.get<any[]>('https://menhealthbackend.onrender.com/api/categories').subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/categories`).subscribe({
         next: (cats) => this.categories = cats,
         error: (err) => console.error('Error fetching categories', err)
     });
@@ -84,7 +87,7 @@ export class BlogEditComponent implements OnInit {
             this.excerpt = post.excerpt;
             this.slug = post.slug;
             this.status = post.status;
-            this.selectedCategory = post.category;
+            this.selectedCategory = typeof post.category === 'object' ? post.category?._id : post.category;
             this.tags = post.tags || [];
             this.coverImageUrl = post.coverImageUrl;
             this.allowComments = post.allowComments;
@@ -96,10 +99,28 @@ export class BlogEditComponent implements OnInit {
 
   fetchComments() {
     if (!this.postId) return;
-    this.http.get<any[]>(`https://menhealthbackend.onrender.com/api/admin/comments/blogs/${this.postId}`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/admin/comments/blogs/${this.postId}`).subscribe({
         next: (comments) => this.comments = comments,
         error: (err) => console.error('Error fetching comments', err)
     });
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.filePreview = typeof reader.result === 'string' ? reader.result : null;
+      };
+      if (this.selectedFile) {
+        reader.readAsDataURL(this.selectedFile);
+      }
+    }
+  }
+
+  get coverImagePreviewUrl(): string {
+    return this.filePreview || this.coverImageUrl;
   }
 
   addTag() {
@@ -122,6 +143,7 @@ export class BlogEditComponent implements OnInit {
     if (this.selectedCategory) formData.append('category', this.selectedCategory);
     this.tags.forEach(tag => formData.append('tags', tag));
     formData.append('allowComments', String(this.allowComments));
+    if (this.selectedFile) formData.append('coverImage', this.selectedFile);
     
     this.blogService.updateBlog(this.postId, formData).subscribe({
         next: (res) => alert('Post updated successfully'),
@@ -131,7 +153,7 @@ export class BlogEditComponent implements OnInit {
 
   // Comment Actions
   toggleApprove(commentId: string) {
-      this.http.patch(`https://menhealthbackend.onrender.com/api/admin/comments/${commentId}/approve`, {}).subscribe({
+      this.http.patch(`${environment.apiUrl}/admin/comments/${commentId}/approve`, {}).subscribe({
           next: () => this.fetchComments(),
           error: (err) => console.error('Error approving comment', err)
       });
@@ -139,7 +161,7 @@ export class BlogEditComponent implements OnInit {
 
   deleteComment(commentId: string) {
       if(!confirm('Are you sure?')) return;
-      this.http.delete(`https://menhealthbackend.onrender.com/api/admin/comments/${commentId}`).subscribe({
+      this.http.delete(`${environment.apiUrl}/admin/comments/${commentId}`).subscribe({
           next: () => this.fetchComments(),
           error: (err) => console.error('Error deleting comment', err)
       });
@@ -147,7 +169,7 @@ export class BlogEditComponent implements OnInit {
 
   replyToComment(commentId: string) {
       if (!this.newAdminReply) return;
-      this.http.post(`https://menhealthbackend.onrender.com/api/admin/comments/${commentId}/reply`, { content: this.newAdminReply }).subscribe({
+      this.http.post(`${environment.apiUrl}/admin/comments/${commentId}/reply`, { content: this.newAdminReply }).subscribe({
           next: () => {
               this.newAdminReply = '';
               this.replyingToCommentId = null;

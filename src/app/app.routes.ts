@@ -14,7 +14,7 @@ import { LogoutComponent } from './pages/logout/logout.component';
 import { OthersComponent } from './pages/others/others.component';
 import { ProductsComponent } from './pages/products/products.component';
 import { ProductAddComponent } from './pages/products/product-add/product-add.component';
-import { ProductEditComponent } from './pages/products/product-edit/product-edit.component';
+import { ProductDetailsComponent } from './pages/products/product-details/product-details.component';
 import { CommentsComponent } from './pages/comments/comments.component';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -34,7 +34,8 @@ export const routes: Routes = [
       { path: 'blogs/edit/:id', component: BlogEditComponent },
       { path: 'blogs', component: BlogsComponent },
       { path: 'products/add', component: ProductAddComponent },
-      { path: 'products/edit/:id', component: ProductEditComponent },
+      { path: 'products/edit/:id', component: ProductDetailsComponent },
+      { path: 'products/:id', component: ProductDetailsComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'comments', component: CommentsComponent },
       { path: 'links', component: LinksComponent },

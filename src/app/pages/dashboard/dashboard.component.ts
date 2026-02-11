@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { ProductService } from '../../core/services/product.service';
 import { BlogService } from '../../core/services/blog.service';
 import { OrderService } from '../../core/services/order.service';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -53,10 +54,35 @@ export class DashboardComponent implements OnInit {
 
   fetchDashboardData() {
     forkJoin({
-      stats: this.dashboardService.getStats(),
-      products: this.productService.getProducts(),
-      blogs: this.blogService.getBlogs(),
-      orders: this.orderService.getOrders()
+      stats: this.dashboardService.getStats().pipe(
+        catchError((err) => {
+          console.error('Error fetching stats', err?.error?.message || err.message || err);
+          return of({
+            totalRevenue: 0,
+            totalProducts: 0,
+            totalOrders: 0,
+            totalCustomers: 0
+          });
+        })
+      ),
+      products: this.productService.getProducts().pipe(
+        catchError((err) => {
+          console.error('Error fetching products', err?.error?.message || err.message || err);
+          return of([]);
+        })
+      ),
+      blogs: this.blogService.getBlogs().pipe(
+        catchError((err) => {
+          console.error('Blogs API failed:', err?.error?.message || err.message || err);
+          return of([]);
+        })
+      ),
+      orders: this.orderService.getOrders().pipe(
+        catchError((err) => {
+          console.error('Orders API failed:', err?.error?.message || err.message || err);
+          return of([]);
+        })
+      )
     }).subscribe({
       next: (data) => {
         // Process Stats
@@ -97,6 +123,7 @@ export class DashboardComponent implements OnInit {
         // Process Recent Orders (Take first 4)
         if (data.orders && data.orders.length > 0) {
             this.recentOrders = data.orders.slice(0, 4).map((order: any) => ({
+                orderId: order._id,
                 id: order._id.substring(0, 8), // Short ID
                 customer: order.customer.name,
                 avatar: 'https://ui-avatars.com/api/?name=' + order.customer.name,

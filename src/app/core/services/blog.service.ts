@@ -9,7 +9,6 @@ import { environment } from '../../../environments/environment';
 })
 export class BlogService {
   private apiUrl = `${environment.apiUrl}/admin/blogs`;
-  private publicApiUrl = `${environment.apiUrl}/blogs`;
 
   constructor(private http: HttpClient) { }
 
@@ -35,6 +34,6 @@ export class BlogService {
 
   // View tracking
   incrementView(id: string): Observable<any> {
-    return this.http.post(`${this.publicApiUrl}/${id}/view`, {});
+    return this.http.post(`${this.apiUrl}/${id}/view`, {});
   }
 }

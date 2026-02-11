@@ -88,11 +88,12 @@ export class BlogCreateComponent {
     this.tags = this.tags.filter(t => t !== tag);
   }
 
-  onSubmit() {
+  private submitPost(status: 'draft' | 'published') {
     const formData = new FormData();
     formData.append('title', this.postTitle);
     formData.append('content', this.postContent);
     formData.append('excerpt', this.excerpt || this.postContent.substring(0, 150) + '...');
+    formData.append('status', status);
 
     const slug = this.postTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
     formData.append('slug', slug);
@@ -119,8 +120,11 @@ export class BlogCreateComponent {
     });
   }
 
+  onSubmit() {
+    this.submitPost('published');
+  }
+
   saveDraft() {
-    // Logic for draft vs publish could be added here
-    this.onSubmit();
+    this.submitPost('draft');
   }
 }
