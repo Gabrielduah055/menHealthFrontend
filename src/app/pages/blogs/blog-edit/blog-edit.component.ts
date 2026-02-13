@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { QuillModule } from 'ngx-quill';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
@@ -39,6 +40,22 @@ export class BlogEditComponent implements OnInit {
   selectedFile: File | null = null;
   filePreview: string | null = null;
   allowComments: boolean = true;
+  regenerateStructured: boolean = false;
+
+  sections: { title: string; body: string }[] = [{ title: '', body: '' }];
+  quote: string = '';
+  readTime: string = '';
+  topics: string[] = [];
+  newTopic: string = '';
+  featuredLabel: string = '';
+  isFeatured: boolean = false;
+  existingGallery: string[] = [];
+  galleryFiles: File[] = [];
+  galleryPreviews: string[] = [];
+
+  authorName = 'Admin';
+  authorRole = 'Administrator';
+  authorAvatarLabel = 'AD';
   
   // Comments
   comments: any[] = [];
@@ -50,6 +67,7 @@ export class BlogEditComponent implements OnInit {
       container: [
         ['bold', 'italic', 'underline'],
         [{ 'align': [] }],
+        [{ 'header': [2, 3, false] }],
         [{ 'list': 'ordered'}, { 'list': 'bullet' }],
         ['image', 'video'],
         ['link', 'code-block']
@@ -61,8 +79,30 @@ export class BlogEditComponent implements OnInit {
   constructor(
     private blogService: BlogService, 
     private route: ActivatedRoute, 
-    private http: HttpClient
-  ) {}
+    private http: HttpClient,
+    private authService: AuthService
+  ) {
+    this.setAuthorDetailsFromSession();
+  }
+
+  private setAuthorDetailsFromSession() {
+    const currentUser = this.authService.currentUserValue;
+    if (!currentUser) return;
+    this.authorName = currentUser.name || this.authorName;
+    this.authorRole = currentUser.authorRole || this.authorRole;
+    this.authorAvatarLabel =
+      currentUser.avatarLabel || this.buildAvatarLabel(this.authorName);
+  }
+
+  private buildAvatarLabel(name: string): string {
+    const initials = name
+      .split(' ')
+      .map((part) => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
+    return initials || 'AD';
+  }
 
   ngOnInit() {
     this.postId = this.route.snapshot.paramMap.get('id') || '';
@@ -92,6 +132,19 @@ export class BlogEditComponent implements OnInit {
             this.coverImageUrl = post.coverImageUrl;
             this.allowComments = post.allowComments;
             this.publishDate = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Not published';
+            this.sections = post.sections && post.sections.length > 0 ? post.sections : [{ title: '', body: '' }];
+            this.quote = post.quote || '';
+            this.readTime = post.readTime || '';
+            this.topics = post.topics || [];
+            this.featuredLabel = post.featuredLabel || '';
+            this.isFeatured = !!post.isFeatured;
+            this.existingGallery = post.gallery || [];
+
+            if (post.author) {
+                this.authorName = post.author.name || this.authorName;
+                this.authorRole = post.author.role || this.authorRole;
+                this.authorAvatarLabel = post.author.avatarLabel || this.authorAvatarLabel;
+            }
         },
         error: (err) => console.error('Error fetching post', err)
     });
@@ -134,6 +187,60 @@ export class BlogEditComponent implements OnInit {
     this.tags = this.tags.filter(t => t !== tag);
   }
 
+  addTopic() {
+    if (this.newTopic && !this.topics.includes(this.newTopic)) {
+      this.topics.push(this.newTopic);
+      this.newTopic = '';
+    }
+  }
+
+  removeTopic(topic: string) {
+    this.topics = this.topics.filter(t => t !== topic);
+  }
+
+  addSection() {
+    this.sections.push({ title: '', body: '' });
+  }
+
+  removeSection(index: number) {
+    if (this.sections.length === 1) {
+      this.sections = [{ title: '', body: '' }];
+      return;
+    }
+    this.sections.splice(index, 1);
+  }
+
+  moveSection(index: number, direction: number) {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= this.sections.length) return;
+    const temp = this.sections[targetIndex];
+    this.sections[targetIndex] = this.sections[index];
+    this.sections[index] = temp;
+  }
+
+  onGallerySelected(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      const files = Array.from(event.target.files) as File[];
+      files.forEach((file) => {
+        this.galleryFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (reader.result) this.galleryPreviews.push(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  removeGalleryFile(index: number) {
+    this.galleryFiles.splice(index, 1);
+    this.galleryPreviews.splice(index, 1);
+  }
+
+  removeExistingGallery(index: number) {
+    this.existingGallery.splice(index, 1);
+  }
+
   onUpdate() {
     const formData = new FormData();
     formData.append('title', this.postTitle);
@@ -142,8 +249,22 @@ export class BlogEditComponent implements OnInit {
     formData.append('slug', this.slug);
     if (this.selectedCategory) formData.append('category', this.selectedCategory);
     this.tags.forEach(tag => formData.append('tags', tag));
+    formData.append('topics', JSON.stringify(this.topics));
+    formData.append(
+      'sections',
+      JSON.stringify(this.sections.filter(section => section.title || section.body))
+    );
+    formData.append('quote', this.quote);
+    formData.append('readTime', this.readTime);
+    formData.append('featuredLabel', this.featuredLabel);
+    formData.append('isFeatured', String(this.isFeatured));
+    formData.append('regenerateStructured', String(this.regenerateStructured));
     formData.append('allowComments', String(this.allowComments));
     if (this.selectedFile) formData.append('coverImage', this.selectedFile);
+    formData.append('gallery', JSON.stringify(this.existingGallery));
+    if (this.galleryFiles.length > 0) {
+      this.galleryFiles.forEach((file) => formData.append('galleryImages', file));
+    }
     
     this.blogService.updateBlog(this.postId, formData).subscribe({
         next: (res) => alert('Post updated successfully'),

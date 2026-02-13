@@ -8,6 +8,8 @@ export interface AdminUser {
   name: string;
   email: string;
   role: string;
+  authorRole?: string;
+  avatarLabel?: string;
   token: string;
 }
 

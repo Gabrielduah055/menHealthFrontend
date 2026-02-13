@@ -32,6 +32,11 @@
     </button>
   </div>
 
+  <div *ngIf="loading" class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+    <div class="w-12 h-12 mx-auto rounded-full border-4 border-gray-200 border-t-purple-600 animate-spin"></div>
+    <p class="text-gray-500 mt-4">Loading customers...</p>
+  </div>
+
   <!-- Empty State -->
   <div *ngIf="!loading && customers.length === 0" class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
     <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
@@ -42,7 +47,7 @@
   </div>
 
   <!-- Customers Table -->
-  <div *ngIf="customers.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+  <div *ngIf="!loading && customers.length > 0" class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>

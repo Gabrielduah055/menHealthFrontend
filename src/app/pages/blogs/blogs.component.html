@@ -12,74 +12,81 @@
 
   <!-- Blog List -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-gray-50 text-xs text-gray-500 uppercase border-b border-gray-100">
-            <th class="px-6 py-4 font-semibold">Title</th>
-            <th class="px-6 py-4 font-semibold">Author</th>
-            <th class="px-6 py-4 font-semibold">Status</th>
-            <th class="px-6 py-4 font-semibold">Date</th>
-            <th class="px-6 py-4 font-semibold text-center">Stats</th>
-            <th class="px-6 py-4 font-semibold text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-          <tr *ngFor="let blog of blogs" class="hover:bg-gray-50 transition-colors group">
-            <td class="px-6 py-4">
-              <div class="font-medium text-gray-900">{{blog.title}}</div>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-600">
-              {{blog.author}}
-            </td>
-            <td class="px-6 py-4">
-              <span class="px-2.5 py-1 rounded-full text-xs font-medium {{blog.statusColor}}">
-                {{blog.status}}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-sm text-gray-500">
-              {{blog.date}}
-            </td>
-            <td class="px-6 py-4 text-center text-sm text-gray-500">
-              <div class="flex justify-center space-x-4">
-                <span class="flex items-center" title="Views">
-                  <i class="uil uil-eye mr-1"></i> {{blog.views}}
-                </span>
-                <span class="flex items-center" title="Comments">
-                  <i class="uil uil-comment mr-1"></i> {{blog.comments}}
-                </span>
-              </div>
-            </td>
-            <td class="px-6 py-4 text-right">
-              <div class="flex items-center justify-end space-x-3">
-                <a [routerLink]="['/blogs/edit', blog.id]" class="text-gray-400 hover:text-purple-600 transition-colors" title="Edit">
-                  <i class="uil uil-pen text-lg"></i>
-                </a>
-                <button
-                  (click)="onDeleteBlog(blog.id)"
-                  [disabled]="deletingBlogId === blog.id"
-                  class="text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  title="Delete"
-                >
-                  <i class="uil uil-trash-alt text-lg"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div *ngIf="loading" class="p-12 text-center">
+      <div class="w-12 h-12 mx-auto rounded-full border-4 border-gray-200 border-t-purple-600 animate-spin"></div>
+      <p class="text-gray-500 mt-4">Loading blog posts...</p>
     </div>
-    
-    <!-- Empty State (Hidden if blogs exist) -->
-    <div *ngIf="blogs.length === 0" class="p-12 text-center">
-      <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
-        <i class="uil uil-file-alt text-3xl"></i>
+
+    <ng-container *ngIf="!loading">
+      <div *ngIf="blogs.length > 0" class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 text-xs text-gray-500 uppercase border-b border-gray-100">
+              <th class="px-6 py-4 font-semibold">Title</th>
+              <th class="px-6 py-4 font-semibold">Author</th>
+              <th class="px-6 py-4 font-semibold">Status</th>
+              <th class="px-6 py-4 font-semibold">Date</th>
+              <th class="px-6 py-4 font-semibold text-center">Stats</th>
+              <th class="px-6 py-4 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let blog of blogs" class="hover:bg-gray-50 transition-colors group">
+              <td class="px-6 py-4">
+                <div class="font-medium text-gray-900">{{blog.title}}</div>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600">
+                {{blog.author}}
+              </td>
+              <td class="px-6 py-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium {{blog.statusColor}}">
+                  {{blog.status}}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-500">
+                {{blog.date}}
+              </td>
+              <td class="px-6 py-4 text-center text-sm text-gray-500">
+                <div class="flex justify-center space-x-4">
+                  <span class="flex items-center" title="Views">
+                    <i class="uil uil-eye mr-1"></i> {{blog.views}}
+                  </span>
+                  <span class="flex items-center" title="Comments">
+                    <i class="uil uil-comment mr-1"></i> {{blog.comments}}
+                  </span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end space-x-3">
+                  <a [routerLink]="['/blogs/edit', blog.id]" class="text-gray-400 hover:text-purple-600 transition-colors" title="Edit">
+                    <i class="uil uil-pen text-lg"></i>
+                  </a>
+                  <button
+                    (click)="onDeleteBlog(blog.id)"
+                    [disabled]="deletingBlogId === blog.id"
+                    class="text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Delete"
+                  >
+                    <i class="uil uil-trash-alt text-lg"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <h3 class="text-lg font-medium text-gray-900">No posts yet</h3>
-      <p class="text-gray-500 mt-1 mb-6">Get started by creating your first blog post.</p>
-      <a routerLink="/blogs/create" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
-        <i class="uil uil-plus mr-2"></i> Create Post
-      </a>
-    </div>
+      
+      <!-- Empty State (Hidden while loading) -->
+      <div *ngIf="blogs.length === 0" class="p-12 text-center">
+        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+          <i class="uil uil-file-alt text-3xl"></i>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900">No posts yet</h3>
+        <p class="text-gray-500 mt-1 mb-6">Get started by creating your first blog post.</p>
+        <a routerLink="/blogs/create" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
+          <i class="uil uil-plus mr-2"></i> Create Post
+        </a>
+      </div>
+    </ng-container>
   </div>
 </div>

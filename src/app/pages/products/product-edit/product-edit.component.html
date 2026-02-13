@@ -22,8 +22,9 @@
 
   <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2 space-y-6">
-      <div *ngIf="loading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-        <p class="text-gray-500">Loading product...</p>
+      <div *ngIf="loading" class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+        <div class="w-12 h-12 mx-auto rounded-full border-4 border-gray-200 border-t-purple-600 animate-spin"></div>
+        <p class="text-gray-500 mt-4">Loading product...</p>
       </div>
 
       <div *ngIf="errorMessage" class="bg-red-50 border border-red-100 rounded-xl p-4 text-sm text-red-700">

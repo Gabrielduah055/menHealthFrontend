@@ -22,7 +22,10 @@
 
   <!-- Comments List -->
   <div class="space-y-4">
-    <div *ngIf="loading" class="text-center py-8 text-gray-500">Loading comments...</div>
+    <div *ngIf="loading" class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+      <div class="w-12 h-12 mx-auto rounded-full border-4 border-gray-200 border-t-purple-600 animate-spin"></div>
+      <p class="text-gray-500 mt-4">Loading comments...</p>
+    </div>
     
     <div *ngIf="!loading && filteredComments.length === 0" class="text-center py-12 bg-white rounded-xl border border-gray-100">
       <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">

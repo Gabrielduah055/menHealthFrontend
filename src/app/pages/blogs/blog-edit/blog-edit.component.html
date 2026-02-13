@@ -62,6 +62,62 @@
         </div>
       </div>
 
+      <!-- Structured Content -->
+      <div class="bg-white rounded-xl border border-gray-100 p-6">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-2">
+            <i class="uil uil-list-ul text-purple-600 text-xl"></i>
+            <h3 class="text-lg font-bold text-gray-900">Structured Content</h3>
+          </div>
+          <label class="flex items-center space-x-2 text-xs text-gray-500">
+            <input type="checkbox" [(ngModel)]="regenerateStructured" class="rounded border-gray-300 text-purple-600">
+            <span>Auto-generate from HTML on save</span>
+          </label>
+        </div>
+
+        <div class="space-y-5">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <p class="text-sm font-semibold text-gray-800">Sections</p>
+              <button (click)="addSection()" class="text-xs text-purple-600 font-semibold hover:text-purple-800">
+                + Add Section
+              </button>
+            </div>
+            <div *ngFor="let section of sections; let i = index" class="bg-gray-50 border border-gray-100 rounded-lg p-4 space-y-3">
+              <div class="flex items-center justify-between gap-3">
+                <input [(ngModel)]="section.title" placeholder="Section title"
+                  class="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-100 focus:border-purple-500">
+                <div class="flex items-center gap-2">
+                  <button (click)="moveSection(i, -1)" [disabled]="i === 0" class="text-gray-400 hover:text-purple-600 disabled:opacity-40">
+                    <i class="uil uil-arrow-up"></i>
+                  </button>
+                  <button (click)="moveSection(i, 1)" [disabled]="i === sections.length - 1" class="text-gray-400 hover:text-purple-600 disabled:opacity-40">
+                    <i class="uil uil-arrow-down"></i>
+                  </button>
+                  <button (click)="removeSection(i)" class="text-xs text-gray-400 hover:text-red-500">
+                    Remove
+                  </button>
+                </div>
+              </div>
+              <textarea [(ngModel)]="section.body" rows="3" placeholder="Section body"
+                class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-100 focus:border-purple-500 resize-none"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Quote</label>
+            <textarea [(ngModel)]="quote" rows="2" placeholder="Optional featured quote"
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-100 focus:border-purple-500 resize-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Read Time</label>
+            <input [(ngModel)]="readTime" placeholder="e.g. 5 min read"
+              class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-100 focus:border-purple-500">
+          </div>
+        </div>
+      </div>
+
       <!-- Comments Section (Integrated) -->
       <div class="border-t border-gray-100 pt-8 mt-12">
         <h3 class="font-bold text-gray-800 mb-6 flex items-center">
@@ -125,6 +181,42 @@
     <!-- Sidebar (Right 4 cols) -->
     <div class="lg:col-span-4 space-y-8 pl-4 border-l border-gray-100/50">
       
+      <div class="bg-white rounded-xl p-4 border border-gray-100 flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+          {{ authorAvatarLabel }}
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-900">{{ authorName }}</p>
+          <p class="text-xs text-gray-500">{{ authorRole }}</p>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Gallery Images</h3>
+        <div class="bg-white rounded-xl border border-gray-100 p-4 space-y-3">
+          <input type="file" hidden #galleryInput multiple accept="image/*" (change)="onGallerySelected($event)">
+          <button (click)="galleryInput.click()" class="w-full py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+            Upload Gallery Images
+          </button>
+          <div *ngIf="existingGallery.length > 0" class="grid grid-cols-3 gap-2">
+            <div *ngFor="let image of existingGallery; let i = index" class="relative h-20 rounded-lg overflow-hidden border border-gray-200">
+              <img [src]="image" class="w-full h-full object-cover">
+              <button (click)="removeExistingGallery(i)" class="absolute top-1 right-1 bg-white/80 text-red-600 rounded-full w-5 h-5 flex items-center justify-center">
+                <i class="uil uil-times text-xs"></i>
+              </button>
+            </div>
+          </div>
+          <div *ngIf="galleryPreviews.length > 0" class="grid grid-cols-3 gap-2">
+            <div *ngFor="let preview of galleryPreviews; let i = index" class="relative h-20 rounded-lg overflow-hidden border border-gray-200">
+              <img [src]="preview" class="w-full h-full object-cover">
+              <button (click)="removeGalleryFile(i)" class="absolute top-1 right-1 bg-white/80 text-red-600 rounded-full w-5 h-5 flex items-center justify-center">
+                <i class="uil uil-times text-xs"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Post Settings -->
       <div>
         <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Post Settings</h3>
@@ -169,6 +261,47 @@
               <i class="uil uil-plus"></i>
             </button>
           </div>
+        </div>
+
+        <!-- Topics -->
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">Topics</label>
+          <div class="flex flex-wrap gap-2 mb-2">
+            <span *ngFor="let topic of topics" class="inline-flex items-center px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-md">
+              {{topic}}
+              <button (click)="removeTopic(topic)" class="ml-1.5 text-purple-400 hover:text-red-500 focus:outline-none">&times;</button>
+            </span>
+          </div>
+          <div class="relative">
+            <input 
+              type="text" 
+              [(ngModel)]="newTopic" 
+              (keydown.enter)="addTopic()"
+              placeholder="Add topic (e.g. #Wellness)" 
+              class="w-full bg-gray-50 border-none rounded-lg text-sm text-gray-700 focus:ring-1 focus:ring-purple-500 py-2.5 px-3 pr-8"
+            >
+            <button (click)="addTopic()" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-600">
+              <i class="uil uil-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Featured -->
+        <div class="mb-5">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">Featured</label>
+          <div class="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-2 mb-2">
+            <span class="text-sm text-gray-600">Show as featured</span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" [(ngModel)]="isFeatured" class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+            </label>
+          </div>
+          <input 
+            type="text" 
+            [(ngModel)]="featuredLabel" 
+            placeholder="Featured label (e.g. Editors Pick)" 
+            class="w-full bg-gray-50 border-none rounded-lg text-sm text-gray-700 focus:ring-1 focus:ring-purple-500 py-2.5 px-3"
+          >
         </div>
 
         <!-- Excerpt -->
