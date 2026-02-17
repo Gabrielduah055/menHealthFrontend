@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,18 +11,19 @@ import { ProductService } from '../../../core/services/product.service';
   templateUrl: './product-add.component.html',
   styleUrls: ['./product-add.component.css']
 })
-export class ProductAddComponent {
+export class ProductAddComponent implements AfterViewInit {
+  @ViewChild('descriptionEditor') descriptionEditor!: ElementRef<HTMLDivElement>;
   productName: string = '';
   description: string = '';
   selectedCategory: string = '';
   selectedBrand: string = '';
-  selectedStatus: string = 'Active'; 
+  selectedStatus: string = 'Active';
   price: number = 0;
   stockQty: number = 0;
-  
+
   tags: string[] = ['Organic', 'Vitamins'];
   newTag: string = '';
-  
+
   expiryDate: string = '';
   mainImageFile: File | null = null;
   mainImagePreview: string | null = null;
@@ -31,7 +32,36 @@ export class ProductAddComponent {
   imageErrorMessage = '';
   isSubmitting = false;
 
-  constructor(private productService: ProductService, private router: Router) {}
+  constructor(private productService: ProductService, private router: Router) { }
+
+  ngAfterViewInit() {
+    if (this.description && this.descriptionEditor?.nativeElement) {
+      this.descriptionEditor.nativeElement.innerHTML = this.description;
+    }
+  }
+
+  execFormat(command: string) {
+    document.execCommand(command, false);
+    this.descriptionEditor?.nativeElement.focus();
+  }
+
+  execFormatBlock(tag: string) {
+    document.execCommand('formatBlock', false, tag);
+    this.descriptionEditor?.nativeElement.focus();
+  }
+
+  execInsertLink() {
+    const url = prompt('Enter the URL:');
+    if (url) {
+      document.execCommand('createLink', false, url);
+    }
+    this.descriptionEditor?.nativeElement.focus();
+  }
+
+  onDescriptionInput(event: Event) {
+    const el = event.target as HTMLElement;
+    this.description = el.innerHTML;
+  }
 
   onMainImageSelected(event: any) {
     if (event.target.files && event.target.files.length > 0) {
@@ -113,15 +143,15 @@ export class ProductAddComponent {
     const formData = new FormData();
     formData.append('name', this.productName);
     formData.append('description', this.description);
-    
+
     // Generate a simple slug
     const slug = this.productName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
     formData.append('slug', slug);
-    
+
     formData.append('price', this.price.toString());
     formData.append('stockQty', this.stockQty.toString());
     formData.append('isActive', (this.selectedStatus === 'Active').toString());
-    
+
     // Append tags as separate fields or JSON string? 
     // Sending as JSON string is often safer with FormData/Multer mix
     // But let's append individually which usually results in an array on backend
@@ -132,7 +162,7 @@ export class ProductAddComponent {
     this.thumbnailFiles.forEach(file => {
       formData.append('images', file);
     });
-    
+
     this.productService.createProduct(formData).subscribe({
       next: (res) => {
         this.isSubmitting = false;

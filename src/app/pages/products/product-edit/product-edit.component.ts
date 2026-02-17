@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,8 @@ import { ProductService } from '../../../core/services/product.service';
   templateUrl: './product-edit.component.html',
   styleUrls: ['./product-edit.component.css']
 })
-export class ProductEditComponent implements OnInit {
+export class ProductEditComponent implements OnInit, AfterViewInit {
+  @ViewChild('descriptionEditor') descriptionEditor!: ElementRef<HTMLDivElement>;
   productId = '';
   loading = true;
   saving = false;
@@ -37,7 +38,7 @@ export class ProductEditComponent implements OnInit {
     private productService: ProductService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.productId = this.route.snapshot.paramMap.get('id') || '';
@@ -66,6 +67,12 @@ export class ProductEditComponent implements OnInit {
         this.reviewsCount = product.reviewsCount || 0;
         this.averageRating = product.averageRating || 4.8;
         this.loading = false;
+        // Load description into the editor
+        setTimeout(() => {
+          if (this.descriptionEditor?.nativeElement && this.description) {
+            this.descriptionEditor.nativeElement.innerHTML = this.description;
+          }
+        });
       },
       error: (err) => {
         console.error('Error loading product', err);
@@ -73,6 +80,35 @@ export class ProductEditComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  ngAfterViewInit() {
+    if (this.description && this.descriptionEditor?.nativeElement) {
+      this.descriptionEditor.nativeElement.innerHTML = this.description;
+    }
+  }
+
+  execFormat(command: string) {
+    document.execCommand(command, false);
+    this.descriptionEditor?.nativeElement.focus();
+  }
+
+  execFormatBlock(tag: string) {
+    document.execCommand('formatBlock', false, tag);
+    this.descriptionEditor?.nativeElement.focus();
+  }
+
+  execInsertLink() {
+    const url = prompt('Enter the URL:');
+    if (url) {
+      document.execCommand('createLink', false, url);
+    }
+    this.descriptionEditor?.nativeElement.focus();
+  }
+
+  onDescriptionInput(event: Event) {
+    const el = event.target as HTMLElement;
+    this.description = el.innerHTML;
   }
 
   onFileSelected(event: Event) {
