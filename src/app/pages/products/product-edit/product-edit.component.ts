@@ -34,6 +34,18 @@ export class ProductEditComponent implements OnInit, AfterViewInit {
   existingImages: string[] = [];
   selectedFiles: File[] = [];
 
+  // Track which formatting options are currently active
+  activeFormats: Record<string, boolean> = {
+    bold: false,
+    italic: false,
+    underline: false,
+    strikeThrough: false,
+    insertUnorderedList: false,
+    insertOrderedList: false,
+  };
+
+  private selectionListener = () => this.updateActiveFormats();
+
   constructor(
     private productService: ProductService,
     private route: ActivatedRoute,
@@ -86,16 +98,31 @@ export class ProductEditComponent implements OnInit, AfterViewInit {
     if (this.description && this.descriptionEditor?.nativeElement) {
       this.descriptionEditor.nativeElement.innerHTML = this.description;
     }
+    document.addEventListener('selectionchange', this.selectionListener);
+  }
+
+  ngOnDestroy() {
+    document.removeEventListener('selectionchange', this.selectionListener);
+  }
+
+  updateActiveFormats() {
+    const commands = ['bold', 'italic', 'underline', 'strikeThrough', 'insertUnorderedList', 'insertOrderedList'];
+    for (const cmd of commands) {
+      this.activeFormats[cmd] = document.queryCommandState(cmd);
+    }
   }
 
   execFormat(command: string) {
-    document.execCommand(command, false);
     this.descriptionEditor?.nativeElement.focus();
+    document.execCommand(command, false);
+    this.updateActiveFormats();
+    this.syncDescription();
   }
 
   execFormatBlock(tag: string) {
-    document.execCommand('formatBlock', false, tag);
     this.descriptionEditor?.nativeElement.focus();
+    document.execCommand('formatBlock', false, tag);
+    this.syncDescription();
   }
 
   execInsertLink() {
@@ -104,11 +131,19 @@ export class ProductEditComponent implements OnInit, AfterViewInit {
       document.execCommand('createLink', false, url);
     }
     this.descriptionEditor?.nativeElement.focus();
+    this.syncDescription();
   }
 
   onDescriptionInput(event: Event) {
     const el = event.target as HTMLElement;
     this.description = el.innerHTML;
+    this.updateActiveFormats();
+  }
+
+  private syncDescription() {
+    if (this.descriptionEditor?.nativeElement) {
+      this.description = this.descriptionEditor.nativeElement.innerHTML;
+    }
   }
 
   onFileSelected(event: Event) {

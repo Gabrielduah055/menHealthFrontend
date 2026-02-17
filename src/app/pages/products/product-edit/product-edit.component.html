@@ -61,26 +61,34 @@
             <div class="border border-purple-100 rounded-lg overflow-hidden">
               <!-- Toolbar -->
               <div class="bg-gray-50 px-3 py-2 border-b border-gray-200 flex flex-wrap items-center gap-1">
-                <button type="button" (click)="execFormat('bold')" title="Bold (Ctrl+B)"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 font-bold text-sm transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormat('bold')"
+                  title="Bold (Ctrl+B)"
+                  class="relative w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors group"
+                  [ngClass]="activeFormats['bold'] ? 'bg-purple-200 text-purple-700' : 'text-gray-600 hover:bg-purple-100 hover:text-purple-600'">
                   B
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Bold</span>
                 </button>
-                <button type="button" (click)="execFormat('italic')" title="Italic (Ctrl+I)"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 italic text-sm transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormat('italic')"
+                  title="Italic (Ctrl+I)"
+                  class="relative w-8 h-8 flex items-center justify-center rounded italic text-sm transition-colors group"
+                  [ngClass]="activeFormats['italic'] ? 'bg-purple-200 text-purple-700' : 'text-gray-600 hover:bg-purple-100 hover:text-purple-600'">
                   I
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Italic</span>
                 </button>
-                <button type="button" (click)="execFormat('underline')" title="Underline (Ctrl+U)"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 underline text-sm transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormat('underline')"
+                  title="Underline (Ctrl+U)"
+                  class="relative w-8 h-8 flex items-center justify-center rounded underline text-sm transition-colors group"
+                  [ngClass]="activeFormats['underline'] ? 'bg-purple-200 text-purple-700' : 'text-gray-600 hover:bg-purple-100 hover:text-purple-600'">
                   U
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Underline</span>
                 </button>
-                <button type="button" (click)="execFormat('strikeThrough')" title="Strikethrough"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 line-through text-sm transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormat('strikeThrough')"
+                  title="Strikethrough"
+                  class="relative w-8 h-8 flex items-center justify-center rounded line-through text-sm transition-colors group"
+                  [ngClass]="activeFormats['strikeThrough'] ? 'bg-purple-200 text-purple-700' : 'text-gray-600 hover:bg-purple-100 hover:text-purple-600'">
                   S
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Strikethrough</span>
@@ -88,15 +96,19 @@
 
                 <div class="w-px h-5 bg-gray-300 mx-1"></div>
 
-                <button type="button" (click)="execFormat('insertUnorderedList')" title="Bullet List"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormat('insertUnorderedList')"
+                  title="Bullet List"
+                  class="relative w-8 h-8 flex items-center justify-center rounded transition-colors group"
+                  [ngClass]="activeFormats['insertUnorderedList'] ? 'bg-purple-200 text-purple-700' : 'text-gray-600 hover:bg-purple-100 hover:text-purple-600'">
                   <i class="uil uil-list-ul text-base"></i>
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Bullet
                     List</span>
                 </button>
-                <button type="button" (click)="execFormat('insertOrderedList')" title="Numbered List"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormat('insertOrderedList')"
+                  title="Numbered List"
+                  class="relative w-8 h-8 flex items-center justify-center rounded transition-colors group"
+                  [ngClass]="activeFormats['insertOrderedList'] ? 'bg-purple-200 text-purple-700' : 'text-gray-600 hover:bg-purple-100 hover:text-purple-600'">
                   <i class="uil uil-list-ol-alt text-base"></i>
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Numbered
@@ -105,14 +117,16 @@
 
                 <div class="w-px h-5 bg-gray-300 mx-1"></div>
 
-                <button type="button" (click)="execFormatBlock('H3')" title="Heading"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 text-xs font-bold transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execFormatBlock('H3')"
+                  title="Heading"
+                  class="relative w-8 h-8 flex items-center justify-center rounded text-xs font-bold transition-colors group text-gray-600 hover:bg-purple-100 hover:text-purple-600">
                   H
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Heading</span>
                 </button>
-                <button type="button" (click)="execInsertLink()" title="Insert Link"
-                  class="relative w-8 h-8 flex items-center justify-center rounded hover:bg-purple-100 hover:text-purple-600 text-gray-600 transition-colors group">
+                <button type="button" (mousedown)="$event.preventDefault()" (click)="execInsertLink()"
+                  title="Insert Link"
+                  class="relative w-8 h-8 flex items-center justify-center rounded transition-colors group text-gray-600 hover:bg-purple-100 hover:text-purple-600">
                   <i class="uil uil-link text-base"></i>
                   <span
                     class="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">Insert
