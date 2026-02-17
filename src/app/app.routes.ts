@@ -15,13 +15,14 @@ import { OthersComponent } from './pages/others/others.component';
 import { ProductsComponent } from './pages/products/products.component';
 import { ProductAddComponent } from './pages/products/product-add/product-add.component';
 import { ProductDetailsComponent } from './pages/products/product-details/product-details.component';
+import { ProductEditComponent } from './pages/products/product-edit/product-edit.component';
 import { CommentsComponent } from './pages/comments/comments.component';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   { path: 'admin/login', component: LoginComponent },
-  { 
-    path: '', 
+  {
+    path: '',
     component: AdminLayoutComponent,
     canActivate: [authGuard],
     children: [
@@ -34,7 +35,7 @@ export const routes: Routes = [
       { path: 'blogs/edit/:id', component: BlogEditComponent },
       { path: 'blogs', component: BlogsComponent },
       { path: 'products/add', component: ProductAddComponent },
-      { path: 'products/edit/:id', component: ProductDetailsComponent },
+      { path: 'products/edit/:id', component: ProductEditComponent },
       { path: 'products/:id', component: ProductDetailsComponent },
       { path: 'products', component: ProductsComponent },
       { path: 'comments', component: CommentsComponent },

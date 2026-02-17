@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +11,8 @@ import { ProductService } from '../../../core/services/product.service';
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.css'],
 })
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('detailDescriptionEditor') detailDescriptionEditor!: ElementRef<HTMLDivElement>;
   productId = '';
   loading = true;
   saving = false;
@@ -43,11 +44,23 @@ export class ProductDetailsComponent implements OnInit {
   replacementMainImagePreview: string | null = null;
   editErrorMessage = '';
 
+  // Rich text editor active format tracking
+  activeFormats: Record<string, boolean> = {
+    bold: false,
+    italic: false,
+    underline: false,
+    strikeThrough: false,
+    insertUnorderedList: false,
+    insertOrderedList: false,
+  };
+
+  private selectionListener = () => this.updateActiveFormats();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.productId = this.route.snapshot.paramMap.get('id') || '';
@@ -107,11 +120,67 @@ export class ProductDetailsComponent implements OnInit {
     this.replacementMainImageFile = null;
     this.replacementMainImagePreview = null;
     this.editErrorMessage = '';
+
+    // Load edit description into contentEditable after view updates
+    setTimeout(() => {
+      if (this.detailDescriptionEditor?.nativeElement && this.editDescription) {
+        this.detailDescriptionEditor.nativeElement.innerHTML = this.editDescription;
+      }
+    });
   }
 
   cancelEditMode() {
     this.isEditMode = false;
     this.editErrorMessage = '';
+  }
+
+  ngAfterViewInit() {
+    document.addEventListener('selectionchange', this.selectionListener);
+  }
+
+  ngOnDestroy() {
+    document.removeEventListener('selectionchange', this.selectionListener);
+  }
+
+  updateActiveFormats() {
+    const commands = ['bold', 'italic', 'underline', 'strikeThrough', 'insertUnorderedList', 'insertOrderedList'];
+    for (const cmd of commands) {
+      this.activeFormats[cmd] = document.queryCommandState(cmd);
+    }
+  }
+
+  execFormat(command: string) {
+    this.detailDescriptionEditor?.nativeElement.focus();
+    document.execCommand(command, false);
+    this.updateActiveFormats();
+    this.syncEditDescription();
+  }
+
+  execFormatBlock(tag: string) {
+    this.detailDescriptionEditor?.nativeElement.focus();
+    document.execCommand('formatBlock', false, tag);
+    this.syncEditDescription();
+  }
+
+  execInsertLink() {
+    const url = prompt('Enter the URL:');
+    if (url) {
+      document.execCommand('createLink', false, url);
+    }
+    this.detailDescriptionEditor?.nativeElement.focus();
+    this.syncEditDescription();
+  }
+
+  onDetailDescriptionInput(event: Event) {
+    const el = event.target as HTMLElement;
+    this.editDescription = el.innerHTML;
+    this.updateActiveFormats();
+  }
+
+  private syncEditDescription() {
+    if (this.detailDescriptionEditor?.nativeElement) {
+      this.editDescription = this.detailDescriptionEditor.nativeElement.innerHTML;
+    }
   }
 
   selectImage(index: number) {
