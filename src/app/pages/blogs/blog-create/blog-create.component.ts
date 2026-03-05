@@ -9,10 +9,10 @@ import { HttpClient } from '@angular/common/http';
 // @ts-ignore
 import Quill from 'quill';
 // @ts-ignore
-import BlotFormatter from 'quill-blot-formatter';
+import BlotFormatter from '@enzedonline/quill-blot-formatter2';
 import { environment } from '../../../../environments/environment';
 
-Quill.register('modules/blotFormatter', BlotFormatter);
+Quill.register('modules/blotFormatter2', BlotFormatter);
 
 @Component({
   selector: 'app-blog-create',
@@ -61,7 +61,7 @@ export class BlogCreateComponent {
         ['link', 'code-block']
       ]
     },
-    blotFormatter: {}
+    blotFormatter2: {}
   };
 
 
