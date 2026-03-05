@@ -10,9 +10,9 @@ import { environment } from '../../../../environments/environment';
 // @ts-ignore
 import Quill from 'quill';
 // @ts-ignore
-import BlotFormatter from 'quill-blot-formatter';
+import BlotFormatter from '@enzedonline/quill-blot-formatter2';
 
-Quill.register('modules/blotFormatter', BlotFormatter);
+Quill.register('modules/blotFormatter2', BlotFormatter);
 
 @Component({
   selector: 'app-blog-edit',
@@ -73,7 +73,7 @@ export class BlogEditComponent implements OnInit {
         ['link', 'code-block']
       ]
     },
-    blotFormatter: {} 
+    blotFormatter2: {} 
   };
 
   constructor(

@@ -27,7 +27,7 @@
               }
             ],
             "allowedCommonJsDependencies": [
-              "quill-blot-formatter",
+              "@enzedonline/quill-blot-formatter2",
               "quill"
             ],
             "styles": [
