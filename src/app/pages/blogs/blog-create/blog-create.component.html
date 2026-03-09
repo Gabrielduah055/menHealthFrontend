@@ -1,5 +1,21 @@
 <div class="min-h-screen bg-gray-50 flex flex-col pb-20">
 
+  <!-- ── Success Modal ─────────────────────────────── -->
+  <div *ngIf="showSuccessModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-fade-in">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm mx-4 text-center">
+      <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+        <i class="uil uil-check-circle text-green-500 text-4xl"></i>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-1">Blog Created!</h2>
+      <p class="text-sm text-gray-500 mb-6">Your post has been successfully created and saved.</p>
+      <button (click)="onModalOk()"
+        class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg hover:shadow-purple-500/30 cursor-pointer">
+        OK, Go to Blogs
+      </button>
+    </div>
+  </div>
+
   <!-- Top Bar -->
   <div class="flex-1 max-w-7xl w-full mx-auto p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
@@ -103,15 +119,18 @@
                 + Add Section
               </button>
             </div>
-            <div *ngFor="let section of sections; let i = index" class="bg-gray-50 border border-gray-100 rounded-lg p-4 space-y-3">
+            <div *ngFor="let section of sections; let i = index"
+              class="bg-gray-50 border border-gray-100 rounded-lg p-4 space-y-3">
               <div class="flex items-center justify-between gap-3">
                 <input [(ngModel)]="section.title" placeholder="Section title"
                   class="flex-1 bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-100 focus:border-purple-500">
                 <div class="flex items-center gap-2">
-                  <button (click)="moveSection(i, -1)" [disabled]="i === 0" class="text-gray-400 hover:text-purple-600 disabled:opacity-40">
+                  <button (click)="moveSection(i, -1)" [disabled]="i === 0"
+                    class="text-gray-400 hover:text-purple-600 disabled:opacity-40">
                     <i class="uil uil-arrow-up"></i>
                   </button>
-                  <button (click)="moveSection(i, 1)" [disabled]="i === sections.length - 1" class="text-gray-400 hover:text-purple-600 disabled:opacity-40">
+                  <button (click)="moveSection(i, 1)" [disabled]="i === sections.length - 1"
+                    class="text-gray-400 hover:text-purple-600 disabled:opacity-40">
                     <i class="uil uil-arrow-down"></i>
                   </button>
                   <button (click)="removeSection(i)" class="text-xs text-gray-400 hover:text-red-500">
@@ -179,13 +198,16 @@
         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 ml-1">Gallery Images</h3>
         <div class="bg-white rounded-xl border border-gray-100 p-4">
           <input type="file" hidden #galleryInput multiple accept="image/*" (change)="onGallerySelected($event)">
-          <button (click)="galleryInput.click()" class="w-full py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+          <button (click)="galleryInput.click()"
+            class="w-full py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
             Upload Gallery Images
           </button>
           <div *ngIf="galleryPreviews.length > 0" class="grid grid-cols-3 gap-2 mt-3">
-            <div *ngFor="let preview of galleryPreviews; let i = index" class="relative h-20 rounded-lg overflow-hidden border border-gray-200">
+            <div *ngFor="let preview of galleryPreviews; let i = index"
+              class="relative h-20 rounded-lg overflow-hidden border border-gray-200">
               <img [src]="preview" class="w-full h-full object-cover">
-              <button (click)="removeGalleryFile(i)" class="absolute top-1 right-1 bg-white/80 text-red-600 rounded-full w-5 h-5 flex items-center justify-center">
+              <button (click)="removeGalleryFile(i)"
+                class="absolute top-1 right-1 bg-white/80 text-red-600 rounded-full w-5 h-5 flex items-center justify-center">
                 <i class="uil uil-times text-xs"></i>
               </button>
             </div>
@@ -249,7 +271,8 @@
         <!-- Topics -->
         <div>
           <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 ml-1">Topics</h3>
-          <div class="bg-white p-1 rounded-lg border border-gray-200 shadow-sm group focus-within:ring-2 focus-within:ring-purple-100 focus-within:border-purple-500 transition-all">
+          <div
+            class="bg-white p-1 rounded-lg border border-gray-200 shadow-sm group focus-within:ring-2 focus-within:ring-purple-100 focus-within:border-purple-500 transition-all">
             <div class="flex flex-wrap gap-2 p-2" *ngIf="topics.length > 0">
               <span *ngFor="let topic of topics"
                 class="inline-flex items-center px-2.5 py-1 bg-violet-50 text-violet-700 text-xs font-medium rounded-full border border-violet-100">
@@ -261,7 +284,8 @@
               </span>
             </div>
             <div class="relative">
-              <input type="text" [(ngModel)]="newTopic" (keydown.enter)="addTopic()" placeholder="Add topics (e.g. #Wellness)"
+              <input type="text" [(ngModel)]="newTopic" (keydown.enter)="addTopic()"
+                placeholder="Add topics (e.g. #Wellness)"
                 class="w-full bg-transparent border-none text-sm text-gray-700 focus:ring-0 py-2.5 px-3">
               <button (click)="addTopic()"
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-600 p-1 rounded-full hover:bg-gray-100 transition-colors">
@@ -278,7 +302,9 @@
             <span class="text-sm text-gray-600">Show as featured</span>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" [(ngModel)]="isFeatured" class="sr-only peer">
-              <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+              <div
+                class="w-10 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600">
+              </div>
             </label>
           </div>
           <input [(ngModel)]="featuredLabel" placeholder="Featured label (e.g. Editors Pick)"
