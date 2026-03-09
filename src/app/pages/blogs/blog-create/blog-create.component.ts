@@ -22,6 +22,7 @@ Quill.register('modules/blotFormatter2', BlotFormatter);
   styleUrls: ['./blog-create.component.css']
 })
 export class BlogCreateComponent {
+  showSuccessModal = false;
   postTitle: string = '';
   postContent: string = '';
   excerpt: string = '';
@@ -216,8 +217,8 @@ export class BlogCreateComponent {
     }
 
     this.blogService.createBlog(formData).subscribe({
-      next: (res) => {
-        this.router.navigate(['/blogs']);
+      next: () => {
+        this.showSuccessModal = true;
       },
       error: (err) => {
         console.error('Error creating blog:', err);
@@ -231,5 +232,10 @@ export class BlogCreateComponent {
 
   saveDraft() {
     this.submitPost('draft');
+  }
+
+  onModalOk() {
+    this.showSuccessModal = false;
+    this.router.navigate(['/blogs']);
   }
 }

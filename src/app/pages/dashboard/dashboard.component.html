@@ -70,8 +70,8 @@
               <td class="py-4 text-gray-600 pl-4">{{post.comments}}</td>
               <td class="py-4 text-gray-500">{{post.date}}</td>
               <td class="py-4 text-right">
-                <div class="flex items-center justify-end space-x-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button class="hover:text-purple-600 p-1"><i class="uil uil-pen"></i></button>
+              <div class="flex items-center justify-end space-x-2 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button [routerLink]="['/blogs/edit', post.id]" class="hover:text-purple-600 p-1"><i class="uil uil-pen"></i></button>
                   <button class="hover:text-purple-600 p-1"><i class="uil uil-share-alt"></i></button>
                   <button class="hover:text-red-600 p-1"><i class="uil uil-ellipsis-v"></i></button>
                 </div>
@@ -101,7 +101,7 @@
           <button [routerLink]="['/products/add']" class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
             <i class="uil uil-box mr-2"></i> Add New Product
           </button>
-          <button class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
+          <button [routerLink]="['/comments']" class="w-full bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 py-2.5 px-4 rounded-lg text-sm font-medium flex items-center justify-center transition-colors cursor-pointer">
             <i class="uil uil-comment-alt-message mr-2"></i> Moderate Comments
           </button>
         </div>
@@ -113,18 +113,24 @@
         <div class="space-y-4">
           <div *ngFor="let comment of recentComments" class="flex items-start space-x-3 pb-4 border-b border-gray-50 last:border-0 last:pb-0">
             <img [src]="comment.avatar" class="w-8 h-8 rounded-full object-cover" alt="User">
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <div class="flex justify-between items-start">
                 <h4 class="text-sm font-semibold text-gray-800">{{comment.name}}</h4>
-                <i class="uil uil-check text-green-500 text-sm"></i>
               </div>
-              <p class="text-xs text-gray-500 mt-0.5 line-clamp-1">{{comment.text}}</p>
+              <p class="text-xs text-gray-500 mt-0.5 line-clamp-2">{{comment.text}}</p>
               <p class="text-[10px] text-gray-400 mt-1">{{comment.time}}</p>
             </div>
           </div>
+          <!-- Empty state -->
+          <div *ngIf="recentComments.length === 0" class="flex flex-col items-center justify-center py-6 text-center">
+            <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+              <i class="uil uil-comment-slash text-gray-400 text-xl"></i>
+            </div>
+            <p class="text-sm text-gray-400">No comments yet</p>
+          </div>
         </div>
         <div class="mt-4 text-center">
-          <a href="#" class="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center justify-center">
+          <a [routerLink]="['/comments']" class="text-xs text-purple-600 hover:text-purple-700 font-medium flex items-center justify-center">
             View All Comments <i class="uil uil-arrow-right ml-1"></i>
           </a>
         </div>

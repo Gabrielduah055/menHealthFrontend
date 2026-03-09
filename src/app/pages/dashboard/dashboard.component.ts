@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { DashboardService } from '../../core/services/dashboard.service';
 import { ProductService } from '../../core/services/product.service';
 import { BlogService } from '../../core/services/blog.service';
 import { OrderService } from '../../core/services/order.service';
 import { catchError, forkJoin, of } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-dashboard',
@@ -26,7 +28,8 @@ export class DashboardComponent implements OnInit {
     private dashboardService: DashboardService,
     private productService: ProductService,
     private blogService: BlogService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private http: HttpClient
   ) {
     // Initialize stats with zeros
     this.stats = [
@@ -40,11 +43,23 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.fetchDashboardData();
+    this.fetchRecentComments();
+  }
+
+  fetchRecentComments() {
+    this.http.get<any[]>(`${environment.apiUrl}/admin/comments`).pipe(
+      catchError(() => of([]))
+    ).subscribe(comments => {
+      this.recentComments = comments.slice(0, 3).map((c: any) => ({
+        name: c.name || 'Anonymous',
+        text: c.content || '',
+        time: new Date(c.createdAt).toLocaleDateString(),
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(c.name || 'A')}&background=ede9fe&color=7c3aed`
+      }));
+    });
   }
 
   initMockData() {
-    // Keep these mock until real API exists
-    this.recentComments = []; 
     this.socialStats = [
         { platform: 'Facebook', followers: '0 followers', change: '0%', isPositive: true, icon: 'uil-facebook-f', bg: 'bg-blue-50', text: 'text-blue-600' },
         { platform: 'Instagram', followers: '0 followers', change: '0%', isPositive: true, icon: 'uil-instagram', bg: 'bg-pink-50', text: 'text-pink-600' },
@@ -98,11 +113,12 @@ export class DashboardComponent implements OnInit {
         // Process Recent Posts (Take first 4)
         if (data.blogs && data.blogs.length > 0) {
             this.recentPosts = data.blogs.slice(0, 4).map((blog: any) => ({
+                id: blog._id,
                 title: blog.title,
                 url: `healthpulse.com/blog/${blog.slug}`,
                 status: blog.status === 'published' ? 'Published' : 'Draft',
                 statusColor: blog.status === 'published' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600',
-                comments: 0, 
+                comments: 0,
                 date: new Date(blog.createdAt).toLocaleDateString()
             }));
         }

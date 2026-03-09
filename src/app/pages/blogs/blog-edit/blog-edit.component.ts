@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BlogService } from '../../../core/services/blog.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -26,13 +26,13 @@ export class BlogEditComponent implements OnInit {
   postTitle: string = '';
   postContent: string = '';
   excerpt: string = '';
-  
+
   categories: any[] = [];
   selectedCategory: string = '';
-  
+
   tags: string[] = [];
   newTag: string = '';
-  
+
   slug: string = '';
   status: string = 'draft';
   publishDate: string = '';
@@ -56,11 +56,12 @@ export class BlogEditComponent implements OnInit {
   authorName = 'Admin';
   authorRole = 'Administrator';
   authorAvatarLabel = 'AD';
-  
+
   // Comments
   comments: any[] = [];
   newAdminReply: string = '';
   replyingToCommentId: string | null = null;
+  showSuccessModal = false;
 
   quillConfig = {
     toolbar: {
@@ -68,17 +69,18 @@ export class BlogEditComponent implements OnInit {
         ['bold', 'italic', 'underline'],
         [{ 'align': [] }],
         [{ 'header': [2, 3, false] }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
         ['image', 'video'],
         ['link', 'code-block']
       ]
     },
-    blotFormatter2: {} 
+    blotFormatter2: {}
   };
 
   constructor(
-    private blogService: BlogService, 
-    private route: ActivatedRoute, 
+    private blogService: BlogService,
+    private route: ActivatedRoute,
+    private router: Router,
     private http: HttpClient,
     private authService: AuthService
   ) {
@@ -113,48 +115,48 @@ export class BlogEditComponent implements OnInit {
 
   fetchCategories() {
     this.http.get<any[]>(`${environment.apiUrl}/categories`).subscribe({
-        next: (cats) => this.categories = cats,
-        error: (err) => console.error('Error fetching categories', err)
+      next: (cats) => this.categories = cats,
+      error: (err) => console.error('Error fetching categories', err)
     });
   }
 
   fetchPost() {
     if (!this.postId) return;
     this.blogService.getBlog(this.postId).subscribe({
-        next: (post) => {
-            this.postTitle = post.title;
-            this.postContent = post.content;
-            this.excerpt = post.excerpt;
-            this.slug = post.slug;
-            this.status = post.status;
-            this.selectedCategory = typeof post.category === 'object' ? post.category?._id : post.category;
-            this.tags = post.tags || [];
-            this.coverImageUrl = post.coverImageUrl;
-            this.allowComments = post.allowComments;
-            this.publishDate = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Not published';
-            this.sections = post.sections && post.sections.length > 0 ? post.sections : [{ title: '', body: '' }];
-            this.quote = post.quote || '';
-            this.readTime = post.readTime || '';
-            this.topics = post.topics || [];
-            this.featuredLabel = post.featuredLabel || '';
-            this.isFeatured = !!post.isFeatured;
-            this.existingGallery = post.gallery || [];
+      next: (post) => {
+        this.postTitle = post.title;
+        this.postContent = post.content;
+        this.excerpt = post.excerpt;
+        this.slug = post.slug;
+        this.status = post.status;
+        this.selectedCategory = typeof post.category === 'object' ? post.category?._id : post.category;
+        this.tags = post.tags || [];
+        this.coverImageUrl = post.coverImageUrl;
+        this.allowComments = post.allowComments;
+        this.publishDate = post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : 'Not published';
+        this.sections = post.sections && post.sections.length > 0 ? post.sections : [{ title: '', body: '' }];
+        this.quote = post.quote || '';
+        this.readTime = post.readTime || '';
+        this.topics = post.topics || [];
+        this.featuredLabel = post.featuredLabel || '';
+        this.isFeatured = !!post.isFeatured;
+        this.existingGallery = post.gallery || [];
 
-            if (post.author) {
-                this.authorName = post.author.name || this.authorName;
-                this.authorRole = post.author.role || this.authorRole;
-                this.authorAvatarLabel = post.author.avatarLabel || this.authorAvatarLabel;
-            }
-        },
-        error: (err) => console.error('Error fetching post', err)
+        if (post.author) {
+          this.authorName = post.author.name || this.authorName;
+          this.authorRole = post.author.role || this.authorRole;
+          this.authorAvatarLabel = post.author.avatarLabel || this.authorAvatarLabel;
+        }
+      },
+      error: (err) => console.error('Error fetching post', err)
     });
   }
 
   fetchComments() {
     if (!this.postId) return;
     this.http.get<any[]>(`${environment.apiUrl}/admin/comments/blogs/${this.postId}`).subscribe({
-        next: (comments) => this.comments = comments,
-        error: (err) => console.error('Error fetching comments', err)
+      next: (comments) => this.comments = comments,
+      error: (err) => console.error('Error fetching comments', err)
     });
   }
 
@@ -265,38 +267,45 @@ export class BlogEditComponent implements OnInit {
     if (this.galleryFiles.length > 0) {
       this.galleryFiles.forEach((file) => formData.append('galleryImages', file));
     }
-    
+
     this.blogService.updateBlog(this.postId, formData).subscribe({
-        next: (res) => alert('Post updated successfully'),
-        error: (err) => console.error('Error updating post', err)
+      next: () => {
+        this.showSuccessModal = true;
+      },
+      error: (err) => console.error('Error updating post', err)
     });
   }
 
   // Comment Actions
   toggleApprove(commentId: string) {
-      this.http.patch(`${environment.apiUrl}/admin/comments/${commentId}/approve`, {}).subscribe({
-          next: () => this.fetchComments(),
-          error: (err) => console.error('Error approving comment', err)
-      });
+    this.http.patch(`${environment.apiUrl}/admin/comments/${commentId}/approve`, {}).subscribe({
+      next: () => this.fetchComments(),
+      error: (err) => console.error('Error approving comment', err)
+    });
   }
 
   deleteComment(commentId: string) {
-      if(!confirm('Are you sure?')) return;
-      this.http.delete(`${environment.apiUrl}/admin/comments/${commentId}`).subscribe({
-          next: () => this.fetchComments(),
-          error: (err) => console.error('Error deleting comment', err)
-      });
+    if (!confirm('Are you sure?')) return;
+    this.http.delete(`${environment.apiUrl}/admin/comments/${commentId}`).subscribe({
+      next: () => this.fetchComments(),
+      error: (err) => console.error('Error deleting comment', err)
+    });
   }
 
   replyToComment(commentId: string) {
-      if (!this.newAdminReply) return;
-      this.http.post(`${environment.apiUrl}/admin/comments/${commentId}/reply`, { content: this.newAdminReply }).subscribe({
-          next: () => {
-              this.newAdminReply = '';
-              this.replyingToCommentId = null;
-              this.fetchComments();
-          },
-          error: (err) => console.error('Error replying', err)
-      });
+    if (!this.newAdminReply) return;
+    this.http.post(`${environment.apiUrl}/admin/comments/${commentId}/reply`, { content: this.newAdminReply }).subscribe({
+      next: () => {
+        this.newAdminReply = '';
+        this.replyingToCommentId = null;
+        this.fetchComments();
+      },
+      error: (err) => console.error('Error replying', err)
+    });
+  }
+
+  onModalOk() {
+    this.showSuccessModal = false;
+    this.router.navigate(['/blogs']);
   }
 }

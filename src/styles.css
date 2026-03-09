@@ -22,3 +22,31 @@
 * {
     font-family: 'Montserrat', sans-serif;
 }
+
+/* ──── Quill / BlotFormatter2 alignment fixes ────────────────────────────
+   Tailwind Preflight sets `img { display: block }` which breaks float-based
+   alignment. Restore inline display and allow floats inside the Quill editor.
+   ──────────────────────────────────────────────────────────────────────── */
+div.ql-editor img {
+    display: inline !important;
+}
+
+div.ql-editor [class^="ql-image-align-"] {
+    display: block !important;
+}
+
+div.ql-editor .ql-image-align-left {
+    float: left !important;
+    margin: 0.5rem 1rem 0.5rem 0 !important;
+}
+
+div.ql-editor .ql-image-align-right {
+    float: right !important;
+    margin: 0.5rem 0 0.5rem 1rem !important;
+}
+
+div.ql-editor .ql-image-align-center {
+    float: none !important;
+    margin: 1rem auto !important;
+    display: block !important;
+}
